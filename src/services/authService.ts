@@ -45,3 +45,18 @@ export const logout = async (): Promise<void> => {
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
 };
+
+export const resetPassword = async (email: string): Promise<void> => {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/update-password`,
+  });
+  if (error) throw error;
+};
+
+export const updatePassword = async (password: string): Promise<void> => {
+  const { error } = await supabase.auth.updateUser({
+    password,
+  });
+  if (error) throw error;
+};
+

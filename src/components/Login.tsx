@@ -89,9 +89,9 @@ export default function Login() {
               <label className="text-sm font-medium text-zinc-700" htmlFor="password">
                 Password
               </label>
-              <button type="button" className="text-xs text-zinc-500 hover:text-zinc-900 transition-colors">
+              <Link to="/forgot-password" className="text-xs text-zinc-500 hover:text-zinc-900 transition-colors">
                 Forgot password?
-              </button>
+              </Link>
             </div>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
