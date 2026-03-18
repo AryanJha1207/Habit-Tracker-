@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  @apply antialiased text-gray-900 bg-gray-50 transition-colors duration-300;
+}
+
+/* Dark Theme Styles */
+html.dark body {
+  @apply bg-gray-950 text-gray-100;
+}
+
+html.dark .bg-white {
+  @apply bg-gray-900 border-gray-800;
+}
+
+html.dark .bg-gray-50 {
+  @apply bg-gray-900;
+}
+
+html.dark .text-gray-900 {
+  @apply text-white;
+}
+
+html.dark .text-gray-600 {
+  @apply text-gray-400;
+}
+
+html.dark .text-gray-500 {
+  @apply text-gray-400;
+}
+
+html.dark .border-gray-100 {
+  @apply border-gray-800;
+}
+
+/* Minimal Mode Styles */
+html.minimal-mode * {
+  transition: none !important;
+  animation: none !important;
+}
+
+html.minimal-mode .shadow-sm,
+html.minimal-mode .shadow-md,
+html.minimal-mode .shadow-lg,
+html.minimal-mode .shadow-xl {
+  box-shadow: none !important;
+}
+
+html.minimal-mode .rounded-3xl,
+html.minimal-mode .rounded-\[3rem\] {
+  border-radius: 0.75rem !important;
+  /* rounded-xl */
+}
