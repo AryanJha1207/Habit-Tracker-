@@ -43,6 +43,14 @@ export default function Signup() {
     }
   }, [currentUser, navigate]);
 
+  const isFormValid = 
+    name.trim() !== '' && 
+    email.trim() !== '' && 
+    password !== '' && 
+    confirmPassword !== '' && 
+    password === confirmPassword && 
+    passwordScore >= 4;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -175,7 +183,11 @@ export default function Signup() {
                 placeholder="••••••••"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full pl-10 pr-10 py-2 bg-zinc-50 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all text-sm"
+                className={`w-full pl-10 pr-10 py-2 bg-zinc-50 border rounded-xl focus:outline-none focus:ring-2 transition-all text-sm ${
+                  confirmPassword && password !== confirmPassword
+                    ? 'border-red-500 focus:ring-red-500/10 focus:border-red-500 text-red-600'
+                    : 'border-zinc-200 focus:ring-zinc-900/5 focus:border-zinc-900'
+                }`}
               />
               <button
                 type="button"
@@ -193,8 +205,8 @@ export default function Signup() {
 
           <button
             type="submit"
-            disabled={isLoading}
-            className="w-full bg-zinc-900 text-white py-2.5 rounded-xl font-medium hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            disabled={isLoading || !isFormValid}
+            className="w-full bg-zinc-900 text-white py-2.5 rounded-xl font-medium hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
