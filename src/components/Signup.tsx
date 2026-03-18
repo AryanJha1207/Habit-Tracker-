@@ -153,6 +153,9 @@ export default function Signup() {
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+            <p className="text-xs text-zinc-500 mt-1">
+              Password must be at least 6 characters, contain 1 uppercase letter, 1 number, and 1 special character.
+            </p>
             {password && strengthInfo.text && (
               <p className={`text-xs font-medium mt-1 ${strengthInfo.color}`}>
                 Password Strength: {strengthInfo.text}
