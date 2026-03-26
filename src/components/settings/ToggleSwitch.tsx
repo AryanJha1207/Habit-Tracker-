@@ -9,19 +9,19 @@ interface ToggleSwitchProps {
 
 const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, description, enabled, onChange }) => {
   return (
-    <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
+    <div className="flex items-center justify-between p-5 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
       <div className="flex flex-col">
-        <span className="font-bold text-gray-900">{label}</span>
-        {description && <span className="text-sm text-gray-500">{description}</span>}
+        <span className="font-semibold text-white text-sm">{label}</span>
+        {description && <span className="text-xs text-gray-400 mt-0.5">{description}</span>}
       </div>
       <button
         onClick={() => onChange(!enabled)}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-          enabled ? 'bg-indigo-600' : 'bg-gray-200'
+        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-300 focus:outline-none ${
+          enabled ? 'bg-purple-500' : 'bg-white/10'
         }`}
       >
         <span
-          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
             enabled ? 'translate-x-6' : 'translate-x-1'
           }`}
         />

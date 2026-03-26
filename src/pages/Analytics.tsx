@@ -19,11 +19,11 @@ import { motion } from 'motion/react';
 import { CheckCircle2, Clock, ListTodo, Percent, History } from 'lucide-react';
 
 const COLORS = {
-  Work: '#4f46e5', // Indigo-600
-  Personal: '#10b981', // Emerald-500
-  Health: '#06b6d4', // Cyan-500
-  Learning: '#8b5cf6', // Violet-500
-  Custom: '#64748b', // Slate-500
+  Work: '#4f46e5',
+  Personal: '#10b981',
+  Health: '#06b6d4',
+  Learning: '#8b5cf6',
+  Custom: '#64748b',
 };
 
 const Analytics: React.FC = () => {
@@ -38,12 +38,12 @@ const Analytics: React.FC = () => {
 
   if (!hasData) {
     return (
-      <div className="p-8 max-w-5xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center">
-        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-          <ListTodo size={40} className="text-gray-400" />
+      <div className="p-6 max-w-5xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <div className="w-20 h-20 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 flex items-center justify-center mb-6">
+          <ListTodo size={40} className="text-gray-500" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">No Data to Analyze</h1>
-        <p className="text-gray-500 mt-2 max-w-md">
+        <h1 className="text-2xl font-bold text-white">No Data to Analyze</h1>
+        <p className="text-gray-400 mt-2 max-w-md">
           Start adding and completing tasks in the Task Manager to see your productivity insights here.
         </p>
       </div>
@@ -51,46 +51,52 @@ const Analytics: React.FC = () => {
   }
 
   const statCards = [
-    { label: 'Total Tasks', value: stats.total, icon: <ListTodo size={20} />, color: 'text-gray-600', bg: 'bg-gray-50' },
-    { label: 'Completed', value: stats.completed, icon: <CheckCircle2 size={20} />, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'Pending', value: stats.pending, icon: <Clock size={20} />, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { label: 'Completion Rate', value: `${stats.percentage}%`, icon: <Percent size={20} />, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+    { label: 'Total Tasks', value: stats.total, icon: <ListTodo size={20} />, accent: 'text-gray-300', glow: 'hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]' },
+    { label: 'Completed', value: stats.completed, icon: <CheckCircle2 size={20} />, accent: 'text-cyan-400', glow: 'hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]' },
+    { label: 'Pending', value: stats.pending, icon: <Clock size={20} />, accent: 'text-purple-400', glow: 'hover:shadow-[0_0_20px_rgba(139,92,246,0.15)]' },
+    { label: 'Completion Rate', value: `${stats.percentage}%`, icon: <Percent size={20} />, accent: 'text-blue-400', glow: 'hover:shadow-[0_0_20px_rgba(59,130,246,0.15)]' },
   ];
 
+  const tooltipStyle = {
+    backgroundColor: 'rgba(11,15,23,0.95)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '12px',
+    color: '#e5e7eb',
+    boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
+  };
+
   return (
-    <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-8">
+    <div className="p-6 max-w-6xl mx-auto space-y-6">
       <header>
-        <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
-        <p className="text-gray-500 mt-1">Visualize your productivity and habit trends.</p>
+        <h1 className="text-3xl font-bold text-white tracking-tight">Analytics Dashboard</h1>
+        <p className="text-gray-400 mt-1">Visualize your productivity and habit trends.</p>
       </header>
 
-      {/* Stats Section */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, index) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm"
+            className={`rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-5 transition-all duration-300 hover:scale-[1.02] ${stat.glow}`}
           >
-            <div className={`w-10 h-10 ${stat.bg} ${stat.color} rounded-xl flex items-center justify-center mb-4`}>
-              {stat.icon}
-            </div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{stat.label}</p>
-            <p className={`text-2xl font-bold mt-1 ${stat.color}`}>{stat.value}</p>
+            <div className={`mb-4 ${stat.accent}`}>{stat.icon}</div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{stat.label}</p>
+            <p className={`text-2xl font-bold mt-1 ${stat.accent}`}>{stat.value}</p>
           </motion.div>
         ))}
       </div>
 
-      {/* Middle Section: Pie & Bar Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm"
+          className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-5"
         >
-          <h2 className="text-lg font-bold text-gray-900 mb-6">Category Distribution</h2>
+          <h2 className="text-base font-semibold text-white mb-6">Category Distribution</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -107,10 +113,8 @@ const Analytics: React.FC = () => {
                     <Cell key={`cell-${entry.name}`} fill={COLORS[entry.name as keyof typeof COLORS]} />
                   ))}
                 </Pie>
-                <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                />
-                <Legend verticalAlign="bottom" height={36}/>
+                <Tooltip contentStyle={tooltipStyle} />
+                <Legend verticalAlign="bottom" height={36} wrapperStyle={{ color: '#9ca3af', fontSize: '12px' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -119,49 +123,44 @@ const Analytics: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm"
+          className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-5"
         >
-          <h2 className="text-lg font-bold text-gray-900 mb-6">Category Performance (Completed)</h2>
+          <h2 className="text-base font-semibold text-white mb-6">Category Performance</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={categoryPerformance}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                <Tooltip 
-                  cursor={{ fill: '#f8fafc' }}
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                />
-                <Bar dataKey="completed" fill="#4f46e5" radius={[4, 4, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
+                <Tooltip cursor={{ fill: 'rgba(255,255,255,0.03)' }} contentStyle={tooltipStyle} />
+                <Bar dataKey="completed" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </motion.div>
       </div>
 
-      {/* Bottom Section: Trend & Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Trend + Activity Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="lg:col-span-2 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm"
+          className="lg:col-span-2 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-5"
         >
-          <h2 className="text-lg font-bold text-gray-900 mb-6">7-Day Completion Trend</h2>
-          <div className="h-72">
+          <h2 className="text-base font-semibold text-white mb-6">7-Day Completion Trend</h2>
+          <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={completionTrend}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="completed" 
-                  stroke="#4f46e5" 
-                  strokeWidth={3} 
-                  dot={{ r: 4, fill: '#4f46e5', strokeWidth: 2, stroke: '#fff' }}
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
+                <Tooltip contentStyle={tooltipStyle} />
+                <Line
+                  type="monotone"
+                  dataKey="completed"
+                  stroke="#22d3ee"
+                  strokeWidth={2.5}
+                  dot={{ r: 4, fill: '#22d3ee', strokeWidth: 2, stroke: '#0b0f17' }}
                   activeDot={{ r: 6, strokeWidth: 0 }}
                 />
               </LineChart>
@@ -172,17 +171,17 @@ const Analytics: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm"
+          className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-5"
         >
           <div className="flex items-center gap-2 mb-6">
-            <History size={20} className="text-gray-400" />
-            <h2 className="text-lg font-bold text-gray-900">Recent Activity</h2>
+            <History size={18} className="text-gray-400" />
+            <h2 className="text-base font-semibold text-white">Recent Activity</h2>
           </div>
           <div className="space-y-4">
             {recentActivity.length > 0 ? (
               recentActivity.map((item) => (
-                <div key={item.id} className="flex flex-col border-l-2 border-indigo-100 pl-4 py-1">
-                  <p className="text-sm font-medium text-gray-900 truncate">{item.title}</p>
+                <div key={item.id} className="flex flex-col border-l-2 border-purple-500/30 pl-4 py-1">
+                  <p className="text-sm font-medium text-gray-200 truncate">{item.title}</p>
                   <p className="text-xs text-gray-500 mt-0.5">
                     Completed {new Date(item.completedAt!).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </p>

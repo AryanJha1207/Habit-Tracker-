@@ -18,20 +18,20 @@ const TimerDisplay: React.FC<TimerDisplayProps> = ({ timeLeft, totalTime, mode }
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   const modeColors = {
-    focus: 'text-indigo-600',
-    shortBreak: 'text-emerald-600',
-    longBreak: 'text-cyan-600',
+    focus: 'text-purple-400',
+    shortBreak: 'text-cyan-400',
+    longBreak: 'text-blue-400',
   };
 
-  const modeBgColors = {
-    focus: 'stroke-indigo-600',
-    shortBreak: 'stroke-emerald-600',
-    longBreak: 'stroke-cyan-600',
+  const modeStrokeColors = {
+    focus: 'stroke-purple-500',
+    shortBreak: 'stroke-cyan-400',
+    longBreak: 'stroke-blue-400',
   };
 
   return (
-    <div className="relative flex items-center justify-center w-80 h-80 mb-8">
-      {/* Background Circle */}
+    <div className="relative flex items-center justify-center w-72 h-72 mb-8">
+      {/* SVG Ring */}
       <svg className="absolute w-full h-full -rotate-90" viewBox="0 0 300 300">
         <circle
           cx="150"
@@ -39,22 +39,21 @@ const TimerDisplay: React.FC<TimerDisplayProps> = ({ timeLeft, totalTime, mode }
           r={radius}
           fill="transparent"
           stroke="currentColor"
-          strokeWidth="8"
-          className="text-gray-100"
+          strokeWidth="6"
+          className="text-white/5"
         />
-        {/* Progress Circle */}
         <motion.circle
           cx="150"
           cy="150"
           r={radius}
           fill="transparent"
           stroke="currentColor"
-          strokeWidth="8"
+          strokeWidth="6"
           strokeDasharray={circumference}
           initial={{ strokeDashoffset: circumference }}
           animate={{ strokeDashoffset }}
           transition={{ duration: 1, ease: 'linear' }}
-          className={`${modeBgColors[mode as keyof typeof modeBgColors]} rounded-full`}
+          className={`${modeStrokeColors[mode as keyof typeof modeStrokeColors]} rounded-full`}
           strokeLinecap="round"
         />
       </svg>
@@ -68,7 +67,7 @@ const TimerDisplay: React.FC<TimerDisplayProps> = ({ timeLeft, totalTime, mode }
         >
           {formattedTime}
         </motion.span>
-        <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mt-2">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mt-2">
           {mode === 'focus' ? 'Stay Focused' : 'Take a Break'}
         </p>
       </div>

@@ -6,7 +6,7 @@ import Pomodoro from './pages/Pomodoro';
 import Analytics from './pages/Analytics';
 import HabitEvaluation from './pages/HabitEvaluation';
 import Settings from './pages/Settings';
-import { SettingsProvider } from './context/SettingsContext';
+import { AppProvider } from './context/AppContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/Login';
@@ -17,7 +17,7 @@ import UpdatePassword from './components/UpdatePassword';
 export default function App() {
   return (
     <AuthProvider>
-      <SettingsProvider>
+      <AppProvider>
         <BrowserRouter>
           <Routes>
             {/* Public Routes */}
@@ -47,7 +47,7 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
-      </SettingsProvider>
+      </AppProvider>
     </AuthProvider>
   );
 }

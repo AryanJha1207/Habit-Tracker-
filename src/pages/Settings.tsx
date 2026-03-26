@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { useSettings } from '../context/SettingsContext';
+import { getTasks, saveTasks } from '../services/taskService';
+import { getGamification, saveGamification } from '../services/gamificationService';
+import { getPomodoroData, savePomodoroData } from '../services/pomodoroService';
+import { getUserPreferences, saveUserPreferences } from '../services/userPreferencesService';
+import { clearAllStorage } from '../services/storageHelper';
+import { useAppContext } from '../context/AppContext';
 import ThemeSelector from '../components/settings/ThemeSelector';
 import ToggleSwitch from '../components/settings/ToggleSwitch';
 import DataManager from '../components/settings/DataManager';
@@ -9,7 +14,10 @@ import { Palette, Database, AlertTriangle, Settings as SettingsIcon } from 'luci
 import { motion } from 'motion/react';
 
 const Settings: React.FC = () => {
-  const { minimalMode, setMinimalMode } = useSettings();
+  const { preferences, updatePreferences } = useAppContext();
+  const minimalMode = preferences.minimalMode;
+  const setMinimalMode = (enabled: boolean) => updatePreferences({ minimalMode: enabled });
+  
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: ToastType; isVisible: boolean }>({
     message: '',
@@ -21,20 +29,12 @@ const Settings: React.FC = () => {
     setToast({ message, type, isVisible: true });
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     const data = {
-      tasks: JSON.parse(localStorage.getItem('habit-tracker-tasks') || '[]'),
-      gamification: JSON.parse(localStorage.getItem('habit-tracker-gamification') || '{}'),
-      pomodoro: {
-        mode: localStorage.getItem('pomodoro-mode'),
-        timeLeft: localStorage.getItem('pomodoro-time-left'),
-        autoStart: localStorage.getItem('pomodoro-auto-start'),
-        dailySessions: JSON.parse(localStorage.getItem('pomodoro-daily-sessions') || '{}'),
-      },
-      settings: {
-        theme: localStorage.getItem('habit-tracker-theme'),
-        minimalMode: localStorage.getItem('habit-tracker-minimal-mode'),
-      }
+      tasks: await getTasks(),
+      gamification: getGamification(),
+      pomodoro: getPomodoroData(),
+      settings: getUserPreferences()
     };
 
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -49,57 +49,64 @@ const Settings: React.FC = () => {
     showToast('Data exported successfully');
   };
 
-  const handleImport = (data: any) => {
-    // Basic validation
-    if (!data.tasks || !Array.isArray(data.tasks)) {
-      showToast('Invalid backup file structure', 'error');
-      return;
-    }
-
+  const handleImport = async (data: any) => {
     try {
-      if (data.tasks) localStorage.setItem('habit-tracker-tasks', JSON.stringify(data.tasks));
-      if (data.gamification) localStorage.setItem('habit-tracker-gamification', JSON.stringify(data.gamification));
-      if (data.pomodoro) {
-        if (data.pomodoro.mode) localStorage.setItem('pomodoro-mode', data.pomodoro.mode);
-        if (data.pomodoro.timeLeft) localStorage.setItem('pomodoro-time-left', data.pomodoro.timeLeft);
-        if (data.pomodoro.autoStart) localStorage.setItem('pomodoro-auto-start', data.pomodoro.autoStart);
-        if (data.pomodoro.dailySessions) localStorage.setItem('pomodoro-daily-sessions', JSON.stringify(data.pomodoro.dailySessions));
+      if (!data || typeof data !== 'object') {
+        throw new Error('Invalid backup file. Root must be an object.');
       }
-      if (data.settings) {
-        if (data.settings.theme) localStorage.setItem('habit-tracker-theme', data.settings.theme);
-        if (data.settings.minimalMode) localStorage.setItem('habit-tracker-minimal-mode', data.settings.minimalMode);
+      
+      if (data.tasks && !Array.isArray(data.tasks)) {
+        throw new Error('Tasks format is corrupted');
       }
+      
+      if (data.gamification && typeof data.gamification.totalPoints !== 'number') {
+        throw new Error('Gamification format is corrupted');
+      }
+      
+      if (data.pomodoro && typeof data.pomodoro.mode !== 'string') {
+        throw new Error('Pomodoro format is corrupted');
+      }
+      
+      if (data.settings && typeof data.settings.theme !== 'string') {
+        throw new Error('Preferences format is corrupted');
+      }
+
+      if (data.tasks) await saveTasks(data.tasks);
+      if (data.gamification) saveGamification(data.gamification);
+      if (data.pomodoro) savePomodoroData(data.pomodoro);
+      if (data.settings) saveUserPreferences(data.settings);
       
       showToast('Data imported successfully. Refreshing...');
       setTimeout(() => window.location.reload(), 1500);
-    } catch (err) {
-      showToast('Error importing data', 'error');
+    } catch (err: any) {
+      console.warn('Import failed:', err);
+      showToast(err.message || 'Error importing data', 'error');
     }
   };
 
   const handleReset = () => {
-    localStorage.clear();
+    clearAllStorage();
     showToast('All data has been reset. Refreshing...');
     setTimeout(() => window.location.reload(), 1500);
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-8">
+    <div className="p-6 max-w-4xl mx-auto space-y-8">
       <header>
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-500 mt-1">Customize your experience and manage your data.</p>
+        <h1 className="text-3xl font-bold text-white tracking-tight">Settings</h1>
+        <p className="text-gray-400 mt-1">Customize your experience and manage your data.</p>
       </header>
 
       {/* Appearance Section */}
-      <section className="space-y-6">
+      <section className="space-y-4">
         <div className="flex items-center gap-3">
-          <Palette size={20} className="text-indigo-600" />
-          <h2 className="text-xl font-bold text-gray-900">Appearance</h2>
+          <Palette size={18} className="text-purple-400" />
+          <h2 className="text-base font-semibold text-white">Appearance</h2>
         </div>
         
         <div className="space-y-4">
-          <div className="p-6 bg-white rounded-3xl border border-gray-100 shadow-sm">
-            <h3 className="font-bold text-gray-900 mb-4">Theme</h3>
+          <div className="p-5 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+            <h3 className="font-semibold text-white text-sm mb-4">Theme</h3>
             <ThemeSelector />
           </div>
           
@@ -116,31 +123,31 @@ const Settings: React.FC = () => {
       </section>
 
       {/* Data Management Section */}
-      <section className="space-y-6">
+      <section className="space-y-4">
         <div className="flex items-center gap-3">
-          <Database size={20} className="text-emerald-600" />
-          <h2 className="text-xl font-bold text-gray-900">Data Management</h2>
+          <Database size={18} className="text-cyan-400" />
+          <h2 className="text-base font-semibold text-white">Data Management</h2>
         </div>
         
         <DataManager onExport={handleExport} onImport={handleImport} />
       </section>
 
       {/* Danger Zone Section */}
-      <section className="space-y-6 pt-8 border-t border-gray-100">
+      <section className="space-y-4 pt-6 border-t border-white/5">
         <div className="flex items-center gap-3">
-          <AlertTriangle size={20} className="text-rose-500" />
-          <h2 className="text-xl font-bold text-rose-500">Danger Zone</h2>
+          <AlertTriangle size={18} className="text-rose-400" />
+          <h2 className="text-base font-semibold text-rose-400">Danger Zone</h2>
         </div>
         
-        <div className="p-6 bg-rose-50 rounded-3xl border border-rose-100">
+        <div className="p-5 rounded-2xl bg-rose-500/5 border border-rose-500/20">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="font-bold text-rose-900">Reset All Data</h3>
-              <p className="text-sm text-rose-700 opacity-80">This will permanently delete all your tasks, streaks, and settings. This action cannot be undone.</p>
+              <h3 className="font-semibold text-rose-300">Reset All Data</h3>
+              <p className="text-sm text-rose-400/70 mt-1">This will permanently delete all your tasks, streaks, and settings. This action cannot be undone.</p>
             </div>
             <button
               onClick={() => setIsResetModalOpen(true)}
-              className="px-6 py-3 bg-rose-600 text-white font-bold rounded-xl hover:bg-rose-700 transition-all shadow-lg shadow-rose-200"
+              className="px-6 py-2.5 bg-rose-500/80 hover:bg-rose-500 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(239,68,68,0.3)] shrink-0 text-sm"
             >
               Reset Data
             </button>

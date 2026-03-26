@@ -4,6 +4,7 @@ import ModeSelector from '../components/pomodoro/ModeSelector';
 import TimerDisplay from '../components/pomodoro/TimerDisplay';
 import TimerControls from '../components/pomodoro/TimerControls';
 import { Coffee, CheckCircle2, Settings as SettingsIcon } from 'lucide-react';
+import { useAppContext } from '../context/AppContext';
 import { motion, AnimatePresence } from 'motion/react';
 
 const MODE_TIMES = {
@@ -13,28 +14,18 @@ const MODE_TIMES = {
 };
 
 const Pomodoro: React.FC = () => {
-  const [mode, setMode] = useState<PomodoroMode>(() => {
-    const saved = localStorage.getItem('pomodoro-mode');
-    return (saved as PomodoroMode) || 'focus';
-  });
+  const { pomodoroData, updatePomodoroData } = useAppContext();
+  const [mode, setMode] = useState<PomodoroMode>(pomodoroData.mode || 'focus');
 
-  const [timeLeft, setTimeLeft] = useState(() => {
-    const saved = localStorage.getItem('pomodoro-time-left');
-    return saved ? parseInt(saved, 10) : MODE_TIMES[mode];
-  });
+  const [timeLeft, setTimeLeft] = useState(pomodoroData.timeLeft ?? MODE_TIMES[pomodoroData.mode || 'focus']);
 
   const [isRunning, setIsRunning] = useState(false);
-  const [autoStart, setAutoStart] = useState(() => {
-    const saved = localStorage.getItem('pomodoro-auto-start');
-    return saved === 'true';
-  });
+  const [autoStart, setAutoStart] = useState(pomodoroData.autoStart || false);
 
   const [sessionsCompleted, setSessionsCompleted] = useState(() => {
-    const saved = localStorage.getItem('pomodoro-daily-sessions');
     const today = new Date().toISOString().split('T')[0];
-    if (saved) {
-      const data: DailySessions = JSON.parse(saved);
-      return data.date === today ? data.sessionsCompleted : 0;
+    if (pomodoroData.dailySessions && pomodoroData.dailySessions.date === today) {
+        return pomodoroData.dailySessions.sessionsCompleted;
     }
     return 0;
   });
@@ -43,16 +34,17 @@ const Pomodoro: React.FC = () => {
 
   // Persistence
   useEffect(() => {
-    localStorage.setItem('pomodoro-mode', mode);
-    localStorage.setItem('pomodoro-time-left', timeLeft.toString());
-    localStorage.setItem('pomodoro-auto-start', autoStart.toString());
-    
     const today = new Date().toISOString().split('T')[0];
-    localStorage.setItem('pomodoro-daily-sessions', JSON.stringify({
-      date: today,
-      sessionsCompleted
-    }));
-  }, [mode, timeLeft, autoStart, sessionsCompleted]);
+    updatePomodoroData({
+      mode,
+      timeLeft,
+      autoStart,
+      dailySessions: {
+        date: today,
+        sessionsCompleted
+      }
+    });
+  }, [mode, timeLeft, autoStart, sessionsCompleted, updatePomodoroData]);
 
   const playNotification = useCallback(() => {
     // Soft beep using Web Audio API
@@ -128,14 +120,15 @@ const Pomodoro: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center p-8 bg-gray-50">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6">
       <div className="max-w-md w-full flex flex-col items-center">
-        <header className="text-center mb-12">
-          <h1 className="text-3xl font-bold text-gray-900">Pomodoro Timer</h1>
-          <p className="text-gray-500 mt-2">Stay focused and productive.</p>
+        <header className="text-center mb-10">
+          <h1 className="text-3xl font-bold text-white tracking-tight">Pomodoro Timer</h1>
+          <p className="text-gray-400 mt-2">Stay focused and productive.</p>
         </header>
 
-        <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm flex flex-col items-center w-full">
+        {/* Timer Card */}
+        <div className="rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 p-10 flex flex-col items-center w-full transition-all duration-300 hover:shadow-[0_0_40px_rgba(139,92,246,0.1)]">
           <ModeSelector currentMode={mode} onModeChange={changeMode} disabled={isRunning} />
           
           <TimerDisplay timeLeft={timeLeft} totalTime={MODE_TIMES[mode]} mode={mode} />
@@ -144,12 +137,12 @@ const Pomodoro: React.FC = () => {
 
           <div className="mt-10 flex items-center gap-8 text-sm font-medium text-gray-400">
             <div className="flex items-center gap-2">
-              <CheckCircle2 size={18} className="text-indigo-500" />
+              <CheckCircle2 size={18} className="text-cyan-400" />
               <span>{sessionsCompleted} Sessions Today</span>
             </div>
             <button 
               onClick={() => setAutoStart(!autoStart)}
-              className={`flex items-center gap-2 transition-colors ${autoStart ? 'text-indigo-600' : 'hover:text-gray-600'}`}
+              className={`flex items-center gap-2 transition-all duration-300 ${autoStart ? 'text-purple-400' : 'hover:text-gray-300'}`}
             >
               <SettingsIcon size={18} />
               <span>Auto-start: {autoStart ? 'On' : 'Off'}</span>
@@ -157,14 +150,15 @@ const Pomodoro: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-4 w-full">
-          <div className="bg-indigo-50 p-6 rounded-3xl border border-indigo-100 flex items-center gap-4">
-            <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
-              <Coffee size={24} />
+        {/* Pro Tip */}
+        <div className="mt-6 w-full">
+          <div className="rounded-2xl bg-gradient-to-r from-cyan-400/10 to-blue-500/10 backdrop-blur-xl border border-white/10 p-5 flex items-center gap-4 transition-all duration-300 hover:shadow-[0_0_20px_rgba(34,211,238,0.1)]">
+            <div className="w-11 h-11 bg-gradient-to-br from-cyan-400/30 to-blue-500/30 rounded-2xl flex items-center justify-center text-cyan-400 border border-white/10 shrink-0">
+              <Coffee size={22} />
             </div>
             <div>
-              <h3 className="font-bold text-indigo-900">Pro Tip</h3>
-              <p className="text-sm text-indigo-700 opacity-80">Take a short break every 25 minutes to keep your mind fresh and focused.</p>
+              <h3 className="font-semibold text-white">Pro Tip</h3>
+              <p className="text-sm text-gray-400 mt-0.5">Take a short break every 25 minutes to keep your mind fresh and focused.</p>
             </div>
           </div>
         </div>

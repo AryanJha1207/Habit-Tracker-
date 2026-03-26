@@ -12,6 +12,8 @@ export interface Task {
   completed: boolean;
   createdAt: number;
   completedAt?: number;
+  awardedPoints?: boolean;
+  pointsEarned?: number;
 }
 
 export interface GamificationData {

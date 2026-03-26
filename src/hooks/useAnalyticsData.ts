@@ -1,22 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Task, Category } from '../types';
+import { useMemo } from 'react';
+import { Category } from '../types';
+import { useAppContext } from '../context/AppContext';
 
 export const useAnalyticsData = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
-
-  useEffect(() => {
-    const loadTasks = () => {
-      const saved = localStorage.getItem('habit-tracker-tasks');
-      if (saved) {
-        setTasks(JSON.parse(saved));
-      }
-    };
-
-    loadTasks();
-    // Listen for storage changes in case TaskManager updates tasks in another tab/window
-    window.addEventListener('storage', loadTasks);
-    return () => window.removeEventListener('storage', loadTasks);
-  }, []);
+  const { tasks } = useAppContext();
 
   const stats = useMemo(() => {
     const total = tasks.length;

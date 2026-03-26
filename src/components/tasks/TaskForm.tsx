@@ -7,6 +7,10 @@ interface TaskFormProps {
   onClose?: () => void;
 }
 
+const inputClass = "w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/50 transition-all text-sm";
+const selectClass = "w-full px-4 py-2.5 rounded-xl bg-[#0b0f17] border border-white/10 text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/50 transition-all text-sm appearance-none";
+const labelClass = "text-xs font-semibold text-gray-400 uppercase tracking-wider";
+
 const TaskForm: React.FC<TaskFormProps> = ({ onAddTask, onClose }) => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<Category>('Personal');
@@ -35,36 +39,32 @@ const TaskForm: React.FC<TaskFormProps> = ({ onAddTask, onClose }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-semibold text-gray-900">Add New Task</h3>
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-6">
+      <div className="flex justify-between items-center mb-1">
+        <h3 className="text-base font-semibold text-white">New Task</h3>
         {onClose && (
-          <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
-            <X size={20} />
+          <button type="button" onClick={onClose} className="text-gray-500 hover:text-gray-300 transition-colors">
+            <X size={18} />
           </button>
         )}
       </div>
 
-      <div className="space-y-1">
-        <label className="text-sm font-medium text-gray-700">Task Title *</label>
+      <div className="space-y-1.5">
+        <label className={labelClass}>Task Title *</label>
         <input
           type="text"
           required
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="What needs to be done?"
-          className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+          className={inputClass}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700">Category</label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value as Category)}
-            className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all bg-white"
-          >
+        <div className="space-y-1.5">
+          <label className={labelClass}>Category</label>
+          <select value={category} onChange={(e) => setCategory(e.target.value as Category)} className={selectClass}>
             <option value="Work">Work</option>
             <option value="Personal">Personal</option>
             <option value="Health">Health</option>
@@ -73,13 +73,9 @@ const TaskForm: React.FC<TaskFormProps> = ({ onAddTask, onClose }) => {
           </select>
         </div>
 
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700">Priority</label>
-          <select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value as Priority)}
-            className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all bg-white"
-          >
+        <div className="space-y-1.5">
+          <label className={labelClass}>Priority</label>
+          <select value={priority} onChange={(e) => setPriority(e.target.value as Priority)} className={selectClass}>
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
             <option value="High">High</option>
@@ -87,30 +83,30 @@ const TaskForm: React.FC<TaskFormProps> = ({ onAddTask, onClose }) => {
         </div>
       </div>
 
-      <div className="space-y-1">
-        <label className="text-sm font-medium text-gray-700">Due Date</label>
+      <div className="space-y-1.5">
+        <label className={labelClass}>Due Date</label>
         <input
           type="date"
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
-          className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+          className={inputClass}
         />
       </div>
 
-      <div className="space-y-1">
-        <label className="text-sm font-medium text-gray-700">Notes</label>
+      <div className="space-y-1.5">
+        <label className={labelClass}>Notes</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Add some details..."
           rows={3}
-          className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all resize-none"
+          className={`${inputClass} resize-none`}
         />
       </div>
 
       <button
         type="submit"
-        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm shadow-indigo-200"
+        className="w-full bg-gradient-to-r from-purple-500/80 to-blue-500/80 hover:from-purple-500 hover:to-blue-500 text-white font-semibold py-2.5 rounded-xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(139,92,246,0.3)] border border-white/10 flex items-center justify-center gap-2"
       >
         <Plus size={18} />
         Add Task

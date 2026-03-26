@@ -25,13 +25,12 @@ const DataManager: React.FC<DataManagerProps> = ({ onImport, onExport }) => {
     reader.readAsText(file);
   };
 
+  const btnClass = "flex items-center justify-center gap-3 p-4 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 text-gray-200 font-semibold text-sm transition-all duration-300 hover:bg-white/10 hover:scale-[1.02]";
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <button
-        onClick={onExport}
-        className="flex items-center justify-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:bg-gray-50 transition-all font-bold text-gray-700"
-      >
-        <Download size={20} className="text-indigo-600" />
+      <button onClick={onExport} className={btnClass}>
+        <Download size={18} className="text-cyan-400" />
         <span>Export Data</span>
       </button>
 
@@ -45,9 +44,9 @@ const DataManager: React.FC<DataManagerProps> = ({ onImport, onExport }) => {
         />
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="w-full flex items-center justify-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:bg-gray-50 transition-all font-bold text-gray-700"
+          className={`w-full ${btnClass}`}
         >
-          <Upload size={20} className="text-emerald-600" />
+          <Upload size={18} className="text-purple-400" />
           <span>Import Data</span>
         </button>
       </div>
